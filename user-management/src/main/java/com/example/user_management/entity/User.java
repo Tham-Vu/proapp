@@ -1,16 +1,19 @@
 package com.example.user_management.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jdk.jfr.Timestamp;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 @Entity
 @Getter
@@ -52,18 +55,30 @@ public class User implements UserDetails, Serializable {
     @Column(name="UPDATE_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
+    @Column(name = "ACTIVE")
+    private boolean active;
+    @JoinColumn(name = "GROUP_ID", referencedColumnName = "ID")
+    @ManyToOne
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Groups groups;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> list = new ArrayList<>();
+        if (this.groups != null){
+            this.getGroups().getListPermission().forEach(permission -> {
+                list.add(new SimpleGrantedAuthority(permission.getName().toUpperCase()));
+            });
+        }
+        return list;
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return this.username;
     }
 }
