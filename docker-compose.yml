@@ -1,0 +1,26 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis-server
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+  oracle:
+    image: oracle/database:21.3.0-se2
+    container_name: oracledb
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    environment:
+      - ORACLE_SID=orcl
+      - ORACLE_PWD=12345
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+volumes:
+  redis_data:
+  oracle_data:
+
+
