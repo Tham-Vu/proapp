@@ -3,8 +3,13 @@ package com.example.proapp_gateway.utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.Charset;
+
 @Component
 public class Constants {
+    public static final String RSA_INSTANCE = "SHA256withRSA";
+    public static Charset SYSTEM_CHARSET = Charset.forName("UTF-8");
+
     public static class Config{
 
         @Value("${app.jwt.secret}")
