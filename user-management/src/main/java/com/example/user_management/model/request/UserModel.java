@@ -13,7 +13,6 @@ import java.util.Date;
 public class UserModel {
     private long id;
     private String username;
-    private String password;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -22,10 +21,11 @@ public class UserModel {
     private Date createDate;
     private Date updateDate;
     private boolean active;
+    private Groups groups;
 
-    public UserModel(String username, String password, String firstName, String lastName, String phoneNumber, Date dateOfBirth, String email, Date createDate, Date updateDate, boolean active, Groups groups) {
+    public UserModel(long id, String username, String firstName, String lastName, String phoneNumber, Date dateOfBirth, String email, Date createDate, Date updateDate, boolean active, Groups groups) {
+        this.id = id;
         this.username = username;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -36,7 +36,5 @@ public class UserModel {
         this.active = active;
         this.groups = groups;
     }
-
-    private Groups groups;
 
 }

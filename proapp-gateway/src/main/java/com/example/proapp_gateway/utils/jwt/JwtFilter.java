@@ -26,25 +26,29 @@ public class JwtFilter implements Filter {
         Date startDate = new Date();
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String authHeader = request.getHeader(Constants.AUTHORIZATION);
-        if (authHeader!=null && authHeader.startsWith(Constants.BEARER)){
-            String token = authHeader.substring(7);
-            String username = null;
-            String role = null;
-            try{
-                username = jwtUtil.getClaimFromToken(token, Claims::getSubject);
-                role = jwtUtil.getClaimFromToken(token, claims -> claims.get(Constants.ROLE)).toString();
-                request.setAttribute(Constants.USERNAME, username);
-                request.setAttribute(Constants.ROLE, role);
-                filterChain.doFilter(request, servletResponse);
-            }catch (Exception e){
-                LoggerInfo loggerInfo = new LoggerInfo(username, role, JwtFilter.class.getName(), request.getRequestURI(), null, request.getQueryString(), startDate, new Date(), e.getMessage());
-                LOGGER.error(loggerInfo);
-                throw new ServletException(Constants.INVALID_JWT_TOKEN);
-            }
+        if(request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/refresh-token")){
+            filterChain.doFilter(request, servletResponse);
         }else {
-            LoggerInfo loggerInfo = new LoggerInfo(null, null, JwtFilter.class.getName(), request.getRequestURI(), null, request.getQueryString(), startDate, new Date(), Constants.MISSING_AUTH_HEADER);
-            LOGGER.error(loggerInfo);
-            throw new ServletException(Constants.MISSING_AUTH_HEADER);
+            if (authHeader != null && authHeader.startsWith(Constants.BEARER)) {
+                String token = authHeader.substring(7);
+                String username = null;
+                String role = null;
+                try {
+                    username = jwtUtil.getClaimFromToken(token, Claims::getSubject);
+                    role = jwtUtil.getClaimFromToken(token, claims -> claims.get(Constants.ROLE)).toString();
+                    request.setAttribute(Constants.USERNAME, username);
+                    request.setAttribute(Constants.ROLE, role);
+                    filterChain.doFilter(request, servletResponse);
+                } catch (Exception e) {
+                    LoggerInfo loggerInfo = new LoggerInfo(username, role, JwtFilter.class.getName(), request.getRequestURI(), null, request.getQueryString(), startDate, new Date(), e.getMessage());
+                    LOGGER.error(loggerInfo);
+                    throw new ServletException(Constants.INVALID_JWT_TOKEN);
+                }
+            } else {
+                LoggerInfo loggerInfo = new LoggerInfo(null, null, JwtFilter.class.getName(), request.getRequestURI(), null, request.getQueryString(), startDate, new Date(), Constants.MISSING_AUTH_HEADER);
+                LOGGER.error(loggerInfo);
+                throw new ServletException(Constants.MISSING_AUTH_HEADER);
+            }
         }
     }
 }
