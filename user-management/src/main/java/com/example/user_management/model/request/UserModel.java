@@ -37,4 +37,20 @@ public class UserModel {
         this.groups = groups;
     }
 
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "id=" + id +
+                ", username='" + username +
+                ", firstName='" + firstName +
+                ", lastName='" + lastName +
+                ", phoneNumber='" + phoneNumber +
+                ", dateOfBirth=" + dateOfBirth +
+                ", email='" + email +
+                ", createDate=" + createDate +
+                ", updateDate=" + updateDate +
+                ", active=" + active +
+                ", groups=" + groups +
+                '}';
+    }
 }

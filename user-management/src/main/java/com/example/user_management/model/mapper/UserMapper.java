@@ -4,8 +4,11 @@ import com.example.user_management.entity.User;
 import com.example.user_management.model.request.UserModel;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper extends EntityMapper<UserModel, User> {
     UserModel toDto(User user);
     User toEntity(UserModel userModel);
+    List<UserModel> toDto(List<User> users);
 }
