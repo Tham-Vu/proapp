@@ -49,6 +49,11 @@ public class User implements UserDetails, Serializable {
     @Column(name="EMAIL")
     @Size(max=100)
     private String email;
+    @Column(name = "PUBLIC_KEY")
+    private String publicKey;
+    @Column(name = "SECRET_CODE")
+    @Size(max = 16)
+    private String secretCode;
     @Column(name="CREATE_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;

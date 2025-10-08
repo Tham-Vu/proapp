@@ -16,6 +16,10 @@ public class Consts {
     public static final String ROLE = "role";
     public static final String NO_CONTENT = "No content";
     public static final String NO_USER_FOUND_IN_DATABASE = "No users found in the database";
+    public static final String USER_NOT_FOUND_IN_DATABASE = "User not found in database ";
+    public static final String ERROR_UPDATE_DATABASE = "An error occurred while updating the database.";
+    public static final String SQL_NOT_CAPTURED = "Sql not captured ";
+    public static final String DELETE_USER_SUCCESSFULLY = "Delete user successfully ";
     public static Charset SYSTEM_CHARSET = Charset.forName("UTF-8");
     @Value("${app.jwt.secret}")
     public static String JWT_SECRET;

@@ -8,6 +8,8 @@ import com.example.user_management.repo.UserRepo;
 import com.example.user_management.service.UserService;
 import com.example.user_management.utils.Consts;
 import com.example.user_management.utils.LoggerInfo;
+import com.example.user_management.utils.SqlStatementInspector;
+import jakarta.ws.rs.InternalServerErrorException;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -57,5 +59,58 @@ public class UserServiceImpl implements UserService {
             return Collections.emptyList();
         }
         return userMapper.toDto(listUser);
+    }
+
+    @Override
+    public UserModel saveUser(UserModel userModel) throws BadRequestException {
+        User savedUser = new User();
+        if (userModel.getId() == null){
+            //create new User
+            User newUser = userMapper.toEntity(userModel);
+            savedUser = userRepo.save(newUser);
+        }else {
+            //update old User
+            User existedUser = userRepo.findById(userModel.getId()).orElseThrow(()->{
+                LOGGER.warn(new LoggerInfo("savedUser", new Date(), Consts.USER_NOT_FOUND_IN_DATABASE + userModel.getId()));
+                return new BadRequestException(Consts.USER_NOT_FOUND_IN_DATABASE + userModel.getId());
+            });
+            //redefine business logic -update user
+            savedUser = userRepo.save(userMapper.toEntity(userModel));
+        }
+        if (savedUser==null){
+            LOGGER.warn(new LoggerInfo("savedUser", new Date(), Consts.ERROR_UPDATE_DATABASE ));
+            throw new InternalServerErrorException(Consts.ERROR_UPDATE_DATABASE + SqlStatementInspector.getLastSql());
+        }
+        return userMapper.toDto(savedUser);
+    }
+
+    @Override
+    public UserModel deleteUser(Long id) throws BadRequestException {
+        User existedUser = userRepo.findById(id).orElseThrow(()->{
+            LOGGER.warn(new LoggerInfo("deleteUser", new Date(), Consts.USER_NOT_FOUND_IN_DATABASE + id));
+            return new BadRequestException(Consts.USER_NOT_FOUND_IN_DATABASE + id);
+        });
+        userRepo.deleteById(id);
+        userRepo.flush();
+        return null;
+    }
+
+    @Override
+    public UserModel changeActive(Long id) throws BadRequestException {
+        User savedUser = null;
+        User existedUser = userRepo.findById(id).orElseThrow(()-> {
+            LOGGER.warn(new LoggerInfo("changeActive", new Date(), Consts.USER_NOT_FOUND_IN_DATABASE + id));
+            return new BadRequestException(Consts.USER_NOT_FOUND_IN_DATABASE + id);
+        });
+        boolean isActive = existedUser.isActive();
+        if (isActive) {
+            existedUser.setActive(false);
+        } else existedUser.setActive(true);
+        savedUser = userRepo.save(existedUser);
+        if (savedUser==null){
+            LOGGER.warn(new LoggerInfo("changeActive", new Date(), Consts.ERROR_UPDATE_DATABASE ));
+            throw new InternalServerErrorException(Consts.ERROR_UPDATE_DATABASE + SqlStatementInspector.getLastSql());
+        }
+        return userMapper.toDto(savedUser);
     }
 }

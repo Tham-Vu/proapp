@@ -13,4 +13,10 @@ public interface UserService extends UserDetailsService {
     User getCurrentUserLogin();
 
     List<UserModel> getAllUser();
+
+    UserModel saveUser(UserModel userModel) throws BadRequestException;
+
+    UserModel deleteUser(Long id) throws BadRequestException;
+
+    UserModel changeActive(Long id) throws BadRequestException;
 }

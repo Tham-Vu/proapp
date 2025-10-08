@@ -16,6 +16,24 @@ public class CommonResponseModel {
     private String message;
     private String data;
 
+    public CommonResponseModel(String request_time, int code, String message) {
+        this.request_time = request_time;
+        this.code = code;
+        this.message = message;
+    }
+
+    public CommonResponseModel(String request_time, int code, String message, String data) {
+        this.request_time = request_time;
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
+    public CommonResponseModel(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
     @Override
     public String toString() {
         return "CommonResponseModel{" +

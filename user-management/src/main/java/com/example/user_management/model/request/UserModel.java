@@ -11,19 +11,21 @@ import java.util.Date;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class UserModel {
-    private long id;
+    private Long id;
     private String username;
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private Date dateOfBirth;
     private String email;
+    private String publicKey;
+    private String secretCode;
     private Date createDate;
     private Date updateDate;
     private boolean active;
     private Groups groups;
 
-    public UserModel(long id, String username, String firstName, String lastName, String phoneNumber, Date dateOfBirth, String email, Date createDate, Date updateDate, boolean active, Groups groups) {
+    public UserModel(Long id, String username, String firstName, String lastName, String phoneNumber, Date dateOfBirth, String email, Date createDate, Date updateDate, boolean active, Groups groups) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
