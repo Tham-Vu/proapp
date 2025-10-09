@@ -9,10 +9,9 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Date;
 
-@Component
+//@Component
 public class JwtFilter implements Filter {
     public static final Logger LOGGER = Logger.getLogger(JwtFilter.class);
     private final JwtUtil jwtUtil;

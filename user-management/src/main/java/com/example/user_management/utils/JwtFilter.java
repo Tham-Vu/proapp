@@ -35,9 +35,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 try {
                     username = String.valueOf(request.getAttribute(Consts.USERNAME));
                     password = String.valueOf(request.getAttribute(Consts.ROLE));
-                    User user = service.loadUserByUsername(username);
-                }catch (){
-
+//                    User user = service.loadUserByUsername(username);
+                }catch (Exception e){
+                    throw new RuntimeException(e.getMessage());
                 }
             }
         }

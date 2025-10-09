@@ -1,4 +1,11 @@
 services:
+  proapp-eureka-server:
+    image: proapp-eureka-server:1.0
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - ms-network
   redis:
     image: redis:latest
     container_name: redis-server
@@ -8,6 +15,8 @@ services:
     volumes:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - ms-network
   oracle:
     image: oracle/database:21.3.0-se2
     container_name: oracledb
@@ -19,8 +28,13 @@ services:
       - ORACLE_PWD=12345
     volumes:
       - oracle_data:/opt/oracle/oradata
+    networks:
+      - ms-network
 volumes:
   redis_data:
   oracle_data:
+networks:
+  ms-network:
+    driver: bridge
 
 

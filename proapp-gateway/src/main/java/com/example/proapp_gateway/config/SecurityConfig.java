@@ -19,7 +19,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         //config permission for user
                         .pathMatchers("/personal/**").hasRole("ADMIN")
-                        .anyExchange().authenticated())
+                        .anyExchange().permitAll())
                         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .build();
     }
