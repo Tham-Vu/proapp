@@ -30,6 +30,14 @@ services:
       - oracle_data:/opt/oracle/oradata
     networks:
       - ms-network
+  proapp-gateway:
+    image: proapp-gateway:1.0
+    container_name: proapp-gateway
+    ports:
+      - "8080:8080"
+    environment:
+    networks:
+      - ms-network
 volumes:
   redis_data:
   oracle_data:

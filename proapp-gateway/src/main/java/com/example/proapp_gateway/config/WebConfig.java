@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration;
 public class WebConfig {
     @Autowired
     private JwtFilter jwtFilter;
-    @Bean
-    public FilterRegistrationBean<JwtFilter> jwtFilter() {
-        FilterRegistrationBean<JwtFilter> bean = new FilterRegistrationBean<>(jwtFilter);
-//        bean.setOrder(2);
-        return bean;
-    }
+//    @Bean
+//    public FilterRegistrationBean<JwtFilter> jwtFilter() {
+//        FilterRegistrationBean<JwtFilter> bean = new FilterRegistrationBean<>(jwtFilter);
+////        bean.setOrder(2);
+//        return bean;
+//    }
 }

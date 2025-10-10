@@ -26,4 +26,5 @@ public class Constants {
     public static final String TOKEN_EXPIRE_EXCEPTION_MESS = "JWT token has expired!";
     public static final String INVALID_JWT_TOKEN = "Invalid JWT token ";
     public static final String MISSING_AUTH_HEADER = "Missing authorization header";
+    public static final String FAILED_WRITE_RESPONSE_BODY = "Failed to write error response body.";
 }

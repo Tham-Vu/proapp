@@ -19,6 +19,26 @@ public class LoggerInfo {
     private Date responseTime;
     private String content;
 
+    public LoggerInfo(String stepName, String url, String request, Date requestTime, Date responseTime, String content) {
+        this.stepName = stepName;
+        this.url = url;
+        this.request = request;
+        this.requestTime = requestTime;
+        this.responseTime = responseTime;
+        this.content = content;
+    }
+
+    public LoggerInfo(String username, String role, String stepName, String url, String request, Date requestTime, Date responseTime, String content) {
+        this.username = username;
+        this.role = role;
+        this.stepName = stepName;
+        this.url = url;
+        this.request = request;
+        this.requestTime = requestTime;
+        this.responseTime = responseTime;
+        this.content = content;
+    }
+
     @Override
     public String toString() {
         return "LoggerInfo{" +
