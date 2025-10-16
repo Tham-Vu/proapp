@@ -9,7 +9,6 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-@RequiredArgsConstructor
 public class UserModel {
     private Long id;
     private String username;

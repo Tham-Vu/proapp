@@ -38,7 +38,7 @@ public class Permission implements Serializable {
     @Column(name = "UPDATE_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
-    @ManyToMany(mappedBy = "permissionList")
+    @ManyToMany(mappedBy = "listPermission")
     private List<Groups> listGroup;
 
 

@@ -36,9 +36,13 @@ public class JwtFilter implements WebFilter {
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         ServerHttpRequest request = exchange.getRequest();
         DataBufferFactory bufferFactory = exchange.getResponse().bufferFactory();
-        if(request.getPath().value().equals("/api/login") || request.getPath().value().equals("/api/refresh-token") || request.getPath().value().equals("/users/**")){
+        String path = request.getPath().value();
+        if (path.startsWith("/user/api/login")
+                || path.startsWith("/user/api/refresh-token")
+                || path.startsWith("/user/")) {
             return chain.filter(exchange);
-        }else {
+        }
+        else {
             if (authHeader != null && authHeader.startsWith(Constants.BEARER)) {
                 String token = authHeader.substring(7);
                 String username = null;
@@ -53,7 +57,6 @@ public class JwtFilter implements WebFilter {
                     LoggerInfo loggerInfo = new LoggerInfo(username, role, JwtFilter.class.getName(), request.getPath().value(), null, request.getBody().toString(), startDate, new Date(), Constants.INVALID_JWT_TOKEN + e.getMessage());
                     LOGGER.error(loggerInfo);
 //                    return exchange.getResponse().setComplete();
-                    JsonResponse res = new JsonResponse(HttpStatus.BAD_REQUEST.value(), Constants.INVALID_JWT_TOKEN);
                     return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, Constants.INVALID_JWT_TOKEN, bufferFactory, objectMapper);
                 }
             } else {

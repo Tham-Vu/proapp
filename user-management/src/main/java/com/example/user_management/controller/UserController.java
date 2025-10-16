@@ -9,7 +9,6 @@ import com.example.user_management.utils.AESUtil;
 import com.example.user_management.utils.Consts;
 import com.example.user_management.utils.LoggerInfo;
 import com.google.gson.Gson;
-import jakarta.ws.rs.Path;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class UserController {
     public static final Logger LOGGER = Logger.getLogger(UserController.class);
     private final UserService userService;
@@ -152,6 +152,10 @@ public class UserController {
         LOGGER.error(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "deleteUser", "/users",  null, id.toString(), startDate, new Date(), Consts.DELETE_USER_SUCCESSFULLY + id));
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase());
         return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(){
+        return ResponseEntity.status(HttpStatus.OK).body("Hello World!");
     }
 
 }
