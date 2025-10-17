@@ -2,7 +2,9 @@ package com.example.user_management.service;
 
 import com.example.user_management.entity.User;
 import com.example.user_management.exception.BadRequestException;
+import com.example.user_management.model.request.LoginModel;
 import com.example.user_management.model.request.UserModel;
+import com.example.user_management.model.response.TokenResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -19,4 +21,6 @@ public interface UserService extends UserDetailsService {
     UserModel deleteUser(Long id) throws BadRequestException;
 
     UserModel changeActive(Long id) throws BadRequestException;
+
+    TokenResponse login(LoginModel loginModel);
 }

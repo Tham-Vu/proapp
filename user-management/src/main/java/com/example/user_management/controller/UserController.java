@@ -2,8 +2,10 @@ package com.example.user_management.controller;
 
 import com.example.user_management.entity.User;
 import com.example.user_management.exception.BadRequestException;
+import com.example.user_management.model.request.LoginModel;
 import com.example.user_management.model.request.UserModel;
 import com.example.user_management.model.response.CommonResponseModel;
+import com.example.user_management.model.response.TokenResponse;
 import com.example.user_management.service.UserService;
 import com.example.user_management.utils.AESUtil;
 import com.example.user_management.utils.Consts;
@@ -83,17 +85,23 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody UserModel userModel){
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();
-        LOGGER.info(new LoggerInfo(currentUser.getUsername(), "createUser", "/users", null, null, startDate));
+        String username = null;
+        List authorities = new ArrayList();
+        if (currentUser != null){
+            username = currentUser.getUsername();
+            authorities = (List) currentUser.getAuthorities();
+        }
+        LOGGER.info(new LoggerInfo(username, "createUser", "/users", null, null, startDate));
         UserModel resUser = null;
         CommonResponseModel res = null;
          try{
              resUser = userService.saveUser(userModel);
          }catch (Exception e){
-             LOGGER.error(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "createUser", "/users",  null, userModel.toString(), startDate, new Date(), e.getMessage()));
+             LOGGER.error(new LoggerInfo(username, authorities.stream().map(role -> role.toString()).toString(), "createUser", "/users",  null, userModel.toString(), startDate, new Date(), e.getMessage()));
              res = new CommonResponseModel(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
          }
-        LOGGER.error(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "createUser", "/users",  null, userModel.toString(), startDate, new Date(), resUser.toString()));
+        LOGGER.error(new LoggerInfo(username, authorities.stream().map(role -> role.toString()).toString(), "createUser", "/users",  null, userModel.toString(), startDate, new Date(), resUser.toString()));
         String jData = AESUtil.encrypt(gson.toJson(resUser), currentUser.getSecretCode());
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), jData);
         return ResponseEntity.status(HttpStatus.OK).body(res);
@@ -154,8 +162,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
     @PostMapping("/login")
-    public ResponseEntity<?> login(){
-        return ResponseEntity.status(HttpStatus.OK).body("Hello World!");
+    public ResponseEntity<?> login(@RequestBody LoginModel loginModel){
+        TokenResponse response = userService.login(loginModel);
+        System.out.println("Hello World!");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

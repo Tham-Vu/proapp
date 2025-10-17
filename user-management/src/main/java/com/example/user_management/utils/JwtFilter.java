@@ -24,7 +24,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Date date = new Date();
-        if(request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/refresh-token")){
+        String path = request.getServletPath().trim();
+        if(path.equals("/api/login") || path.equals("/api/refresh-token") || path.equals("/api/users")){
             filterChain.doFilter(request, response);
         }else {
             String username = null;
@@ -36,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     username = String.valueOf(request.getAttribute(Consts.USERNAME));
                     password = String.valueOf(request.getAttribute(Consts.ROLE));
 //                    User user = service.loadUserByUsername(username);
+//                    filterChain.doFilter(request, response);
                 }catch (Exception e){
                     throw new RuntimeException(e.getMessage());
                 }

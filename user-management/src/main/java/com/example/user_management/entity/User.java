@@ -20,19 +20,18 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USER")
+@Table(name = "PROAPP_USER")
 public class User implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NonNull
     @Column(name = "ID")
     private Long id;
     @Column(name="USER_NAME")
     @Size(max=100)
     private String username;
-    @Column(name="PASSWORD")
+    @Column(name="PASS_WORD")
     private String password;
     @Column(name="FIRST_NAME")
     @Size(max=50)

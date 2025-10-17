@@ -39,10 +39,10 @@ public class JwtFilter implements WebFilter {
         String path = request.getPath().value();
         if (path.startsWith("/user/api/login")
                 || path.startsWith("/user/api/refresh-token")
-                || path.startsWith("/user/")) {
+                || path.startsWith("/user/api/users")
+        ) {
             return chain.filter(exchange);
-        }
-        else {
+        }else {
             if (authHeader != null && authHeader.startsWith(Constants.BEARER)) {
                 String token = authHeader.substring(7);
                 String username = null;
