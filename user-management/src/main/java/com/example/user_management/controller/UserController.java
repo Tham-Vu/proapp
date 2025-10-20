@@ -35,24 +35,24 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable long id){
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();
-        LOGGER.info(new LoggerInfo(currentUser.getUsername(), "getUserById", "/users/" + id, null, String.valueOf(id), startDate));
+        LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), "getUserById", "/users/" + id, null, String.valueOf(id), startDate));
 
         UserModel userModel = null;
         CommonResponseModel res = null;
         try {
             userModel = userService.getUserById(id);
         } catch (BadRequestException e) {
-            LOGGER.info(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getUserById", "users/"+ id,  null, String.valueOf(id), startDate, new Date(), e.getMessage() + id));
+            LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getUserById", "users/"+ id,  null, String.valueOf(id), startDate, new Date(), e.getMessage() + id));
             res = new CommonResponseModel(HttpStatus.BAD_REQUEST.value(), e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }catch (Exception e){
-            LOGGER.error(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getUserById", "users/"+ id,  null, String.valueOf(id), startDate, new Date(), e.getMessage()));
+            LOGGER.error(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getUserById", "users/"+ id,  null, String.valueOf(id), startDate, new Date(), e.getMessage()));
             res = new CommonResponseModel(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
 
-        LOGGER.info(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getUserById", "users/"+ id,  null, String.valueOf(id), startDate, new Date(), userModel.toString()));
-        String jData = AESUtil.encrypt(String.valueOf(userModel), currentUser.getSecretCode());
+        LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getUserById", "users/"+ id,  null, String.valueOf(id), startDate, new Date(), userModel.toString()));
+        String jData = AESUtil.encrypt(String.valueOf(userModel), currentUser==null?null:currentUser.getSecretCode());
         res = new CommonResponseModel(String.valueOf(startDate), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), jData);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
@@ -60,24 +60,24 @@ public class UserController {
     public ResponseEntity<?> getAllUsers(){
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();
-        LOGGER.info(new LoggerInfo(currentUser.getUsername(), "getAllUsers", "/users", null, null, startDate));
+        LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), "getAllUsers", "/users", null, null, startDate));
 
         List<UserModel> list = new ArrayList<>();
         CommonResponseModel res = null;
         try{
             list = userService.getAllUser();
             if (list == null || list.isEmpty()){
-                LOGGER.info(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getAllUsers", "users",  null, null, startDate, new Date(), Consts.NO_USER_FOUND_IN_DATABASE));
+                LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getAllUsers", "users",  null, null, startDate, new Date(), Consts.NO_USER_FOUND_IN_DATABASE));
                 res = new CommonResponseModel(HttpStatus.NO_CONTENT.value(), Consts.NO_USER_FOUND_IN_DATABASE);
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(res);
             }
         }catch(Exception e){
-            LOGGER.info(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getAllUsers", "users",  null, null, startDate, new Date(), e.getMessage()));
+            LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getAllUsers", "users",  null, null, startDate, new Date(), e.getMessage()));
             res = new CommonResponseModel(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
-        LOGGER.info(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getAllUsers", "users",  null, null, startDate, new Date(), gson.toJson(list)));
-        String jData = AESUtil.encrypt(gson.toJson(list), currentUser.getSecretCode());
+        LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getAllUsers", "users",  null, null, startDate, new Date(), gson.toJson(list)));
+        String jData = AESUtil.encrypt(gson.toJson(list), currentUser==null?null:currentUser.getSecretCode());
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), jData );
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
@@ -86,10 +86,12 @@ public class UserController {
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();
         String username = null;
+        String secretCode = null;
         List authorities = new ArrayList();
         if (currentUser != null){
             username = currentUser.getUsername();
             authorities = (List) currentUser.getAuthorities();
+            secretCode = currentUser.getSecretCode();
         }
         LOGGER.info(new LoggerInfo(username, "createUser", "/users", null, null, startDate));
         UserModel resUser = null;
@@ -102,8 +104,8 @@ public class UserController {
              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
          }
         LOGGER.error(new LoggerInfo(username, authorities.stream().map(role -> role.toString()).toString(), "createUser", "/users",  null, userModel.toString(), startDate, new Date(), resUser.toString()));
-        String jData = AESUtil.encrypt(gson.toJson(resUser), currentUser.getSecretCode());
-        res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), jData);
+//        String jData = AESUtil.encrypt(gson.toJson(resUser), null);
+        res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), resUser.toString());
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
     @PatchMapping("/users")

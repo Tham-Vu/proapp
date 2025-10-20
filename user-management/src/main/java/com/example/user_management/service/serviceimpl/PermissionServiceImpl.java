@@ -1,8 +1,78 @@
 package com.example.user_management.service.serviceimpl;
 
+import com.example.user_management.entity.Permission;
+import com.example.user_management.entity.User;
+import com.example.user_management.exception.BadRequestException;
+import com.example.user_management.model.mapper.PermissionMapper;
+import com.example.user_management.model.request.PermissionModel;
+import com.example.user_management.repo.PermissionRepo;
 import com.example.user_management.service.PermissionService;
+import com.example.user_management.utils.Consts;
+import com.example.user_management.utils.LoggerInfo;
+import com.example.user_management.utils.SqlStatementInspector;
+import jakarta.ws.rs.InternalServerErrorException;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {
+    private static final Logger LOGGER = Logger.getLogger(PermissionServiceImpl.class);
+    private final PermissionRepo repo;
+    private final PermissionMapper mapper;
+
+    public PermissionServiceImpl(PermissionRepo repo, PermissionMapper mapper) {
+        this.repo = repo;
+        this.mapper = mapper;
+    }
+
+    @Override
+    public PermissionModel savePermission(PermissionModel model) throws BadRequestException {
+        Permission savedPermission = new Permission();
+        if (model.getId() == null){
+            Permission newPermission = mapper.toEntity(model);
+            savedPermission = repo.save(newPermission);
+        }else {
+            //update old permission
+            Permission existedPermission = repo.findById(model.getId()).orElseThrow(()->{
+                LOGGER.warn(new LoggerInfo("savedPermission", new Date(), Consts.PERMISSION_NOT_FOUND_IN_DATABASE + model.getId()));
+                return new BadRequestException(Consts.PERMISSION_NOT_FOUND_IN_DATABASE + model.getId());
+            });
+        }
+        savedPermission = repo.save(mapper.toEntity(model));
+        if (savedPermission == null){
+            LOGGER.warn(new LoggerInfo("savedPermission", new Date(), Consts.ERROR_UPDATE_DATABASE ));
+            throw new InternalServerErrorException(Consts.ERROR_UPDATE_DATABASE + SqlStatementInspector.getLastSql());
+        }
+        return mapper.toDto(savedPermission);
+    }
+
+    @Override
+    public List<PermissionModel> getAllPermission() {
+        List<Permission>  list = repo.findAll();
+        if (list == null  || list.isEmpty()){
+            LOGGER.warn(new LoggerInfo("getAllPermission", new Date(), Consts.NO_CONTENT));
+            return Collections.emptyList();
+        }
+        return mapper.toDto(list);
+    }
+
+    @Override
+    public PermissionModel getPermissionById(long id) throws BadRequestException {
+        Permission permission = repo.findById(id).orElseThrow(()->new BadRequestException(Consts.PERMISSION_NOT_FOUND_IN_DATABASE + id));
+        return mapper.toDto(permission);
+    }
+
+    @Override
+    public void deletePermission(long id) throws BadRequestException {
+        Permission existedPermission = repo.findById(id).orElseThrow(()->{
+            LOGGER.warn(new LoggerInfo("deletePermission", new Date(), Consts.PERMISSION_NOT_FOUND_IN_DATABASE + id));
+            return new BadRequestException(Consts.PERMISSION_NOT_FOUND_IN_DATABASE + id);
+        });
+        repo.deleteById(id);
+        repo.flush();
+    }
 }

@@ -1,10 +1,8 @@
 package com.example.user_management.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import jdk.jfr.Timestamp;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -20,6 +18,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "PROAPP_USER")
 public class User implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
