@@ -21,7 +21,7 @@ public class Permission implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    @NonNull
+//    @NonNull
     private Long id;
     @Column(name = "NAME")
     @Size(max = 200)

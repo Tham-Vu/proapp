@@ -108,7 +108,7 @@ public class UserController {
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), resUser.toString());
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
-    @PatchMapping("/users")
+    @PutMapping("/users")
     public ResponseEntity<?> updateUser(@RequestBody UserModel userModel){
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();

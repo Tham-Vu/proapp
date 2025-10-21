@@ -10,4 +10,5 @@ public interface PermissionMapper extends EntityMapper<PermissionModel, Permissi
     PermissionModel toDto(Permission permission);
     Permission toEntity(PermissionModel permissionModel);
     List<PermissionModel> toDto(List<Permission> permissions);
+    List<Permission> toEntity(List<PermissionModel> models);
 }

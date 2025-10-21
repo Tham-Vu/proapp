@@ -1,11 +1,11 @@
 package com.example.user_management.service.serviceimpl;
 
 import com.example.user_management.entity.Groups;
-import com.example.user_management.entity.Permission;
 import com.example.user_management.exception.BadRequestException;
 import com.example.user_management.model.mapper.GroupsMapper;
+import com.example.user_management.model.mapper.PermissionMapper;
+import com.example.user_management.model.mapper.UserMapper;
 import com.example.user_management.model.request.GroupModel;
-import com.example.user_management.model.request.PermissionModel;
 import com.example.user_management.repo.GroupsRepo;
 import com.example.user_management.service.GroupsService;
 import com.example.user_management.utils.Consts;
@@ -24,10 +24,14 @@ public class GroupsServiceImpl implements GroupsService {
     private static  final Logger LOGGER = Logger.getLogger(GroupsServiceImpl.class);
     private final GroupsRepo repo;
     private final GroupsMapper mapper;
+    private final UserMapper userMapper;
+    private final PermissionMapper permissionMapper;
 
-    public GroupsServiceImpl(GroupsRepo repo, GroupsMapper mapper) {
+    public GroupsServiceImpl(GroupsRepo repo, GroupsMapper mapper, UserMapper userMapper, PermissionMapper permissionMapper) {
         this.repo = repo;
         this.mapper = mapper;
+        this.userMapper = userMapper;
+        this.permissionMapper = permissionMapper;
     }
 
     @Override
@@ -42,8 +46,15 @@ public class GroupsServiceImpl implements GroupsService {
                 LOGGER.warn(new LoggerInfo("saveGroups", new Date(), Consts.GROUPS_NOT_FOUND_IN_DATABASE + model.getId()));
                 return new BadRequestException(Consts.GROUPS_NOT_FOUND_IN_DATABASE + model.getId());
             });
+            existedGroups.setName(model.getName());
+            existedGroups.setDescription(model.getDescription());
+            existedGroups.setActive(model.isActive());
+            existedGroups.setCreateDate(model.getCreateDate());
+            existedGroups.setUpdateDate(model.getUpdateDate());
+            existedGroups.setListUser(userMapper.toEntity(model.getUserModelList()));
+            existedGroups.setListPermission(permissionMapper.toEntity(model.getPermissionModelList()));
+            savedGroup = repo.save(mapper.toEntity(model));
         }
-        savedGroup = repo.save(mapper.toEntity(model));
         if (savedGroup == null){
             LOGGER.warn(new LoggerInfo("saveGroup", new Date(), Consts.ERROR_UPDATE_DATABASE ));
             throw new InternalServerErrorException(Consts.ERROR_UPDATE_DATABASE + SqlStatementInspector.getLastSql());

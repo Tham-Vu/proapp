@@ -14,4 +14,5 @@ public interface GroupsMapper extends EntityMapper<GroupModel, Groups> {
 
     Groups toEntity(GroupModel model);
     List<GroupModel> toDto(List<Groups> groups);
+    List<Groups> toEntity(List<GroupModel> groupModels);
 }

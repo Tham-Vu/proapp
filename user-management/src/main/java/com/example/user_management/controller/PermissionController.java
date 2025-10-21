@@ -102,7 +102,7 @@ public class PermissionController {
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), permissionRes.toString());
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
-    @PatchMapping("/permissions")
+    @PutMapping("/permissions")
     public ResponseEntity<?> updatePermission(@RequestBody PermissionModel permissionModel){
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();

@@ -15,4 +15,5 @@ public interface UserMapper extends EntityMapper<UserModel, User> {
     @Mapping(target = "groups", ignore  = true)
     User toEntity(UserModel userModel);
     List<UserModel> toDto(List<User> users);
+    List<User> toEntity(List<UserModel> models);
 }

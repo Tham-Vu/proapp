@@ -103,7 +103,7 @@ public class GroupsController {
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), resGroup.toString());
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
-    @PatchMapping("/groups")
+    @PutMapping("/groups")
     public ResponseEntity<?> updateGroups(@RequestBody GroupModel model){
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();

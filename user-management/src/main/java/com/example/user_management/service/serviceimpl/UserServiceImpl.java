@@ -85,6 +85,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 LOGGER.warn(new LoggerInfo("savedUser", new Date(), Consts.USER_NOT_FOUND_IN_DATABASE + userModel.getId()));
                 return new BadRequestException(Consts.USER_NOT_FOUND_IN_DATABASE + userModel.getId());
             });
+            existedUser.setUsername(userModel.getUsername());
+            existedUser.setFirstName(userModel.getFirstName());
+            existedUser.setLastName(userModel.getLastName());
+            existedUser.setPhoneNumber(userModel.getPhoneNumber());
+            existedUser.setDateOfBirth(userModel.getDateOfBirth());
+            existedUser.setEmail(userModel.getEmail());
+            existedUser.setPublicKey(userModel.getPublicKey());
+            existedUser.setSecretCode(userModel.getSecretCode());
+            existedUser.setCreateDate(userModel.getCreateDate());
+            existedUser.setUpdateDate(userModel.getUpdateDate());
+            existedUser.setActive(userModel.isActive());
+            existedUser.setGroups(userModel.getGroups());
             //redefine business logic -update user
             savedUser = userRepo.save(userMapper.toEntity(userModel));
         }

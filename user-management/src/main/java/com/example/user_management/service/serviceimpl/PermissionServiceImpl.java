@@ -1,8 +1,8 @@
 package com.example.user_management.service.serviceimpl;
 
 import com.example.user_management.entity.Permission;
-import com.example.user_management.entity.User;
 import com.example.user_management.exception.BadRequestException;
+import com.example.user_management.model.mapper.GroupsMapper;
 import com.example.user_management.model.mapper.PermissionMapper;
 import com.example.user_management.model.request.PermissionModel;
 import com.example.user_management.repo.PermissionRepo;
@@ -23,10 +23,12 @@ public class PermissionServiceImpl implements PermissionService {
     private static final Logger LOGGER = Logger.getLogger(PermissionServiceImpl.class);
     private final PermissionRepo repo;
     private final PermissionMapper mapper;
+    private final GroupsMapper groupsMapper;
 
-    public PermissionServiceImpl(PermissionRepo repo, PermissionMapper mapper) {
+    public PermissionServiceImpl(PermissionRepo repo, PermissionMapper mapper, GroupsMapper groupsMapper) {
         this.repo = repo;
         this.mapper = mapper;
+        this.groupsMapper = groupsMapper;
     }
 
     @Override
@@ -41,8 +43,14 @@ public class PermissionServiceImpl implements PermissionService {
                 LOGGER.warn(new LoggerInfo("savedPermission", new Date(), Consts.PERMISSION_NOT_FOUND_IN_DATABASE + model.getId()));
                 return new BadRequestException(Consts.PERMISSION_NOT_FOUND_IN_DATABASE + model.getId());
             });
+            existedPermission.setName(model.getName());
+            existedPermission.setDescription(model.getDescription());
+            existedPermission.setActive(model.getActive());
+            existedPermission.setCreateDate(model.getCreateDate());
+            existedPermission.setUpdateDate(model.getUpdateDate());
+            existedPermission.setListGroup(groupsMapper.toEntity(model.getListGroup()));
+            savedPermission = repo.save(existedPermission);
         }
-        savedPermission = repo.save(mapper.toEntity(model));
         if (savedPermission == null){
             LOGGER.warn(new LoggerInfo("savedPermission", new Date(), Consts.ERROR_UPDATE_DATABASE ));
             throw new InternalServerErrorException(Consts.ERROR_UPDATE_DATABASE + SqlStatementInspector.getLastSql());
