@@ -1,10 +1,12 @@
 package com.example.user_management.service.serviceimpl;
 
+import com.example.user_management.entity.Groups;
 import com.example.user_management.entity.Permission;
 import com.example.user_management.exception.BadRequestException;
 import com.example.user_management.model.mapper.GroupsMapper;
 import com.example.user_management.model.mapper.PermissionMapper;
 import com.example.user_management.model.request.PermissionModel;
+import com.example.user_management.repo.GroupsRepo;
 import com.example.user_management.repo.PermissionRepo;
 import com.example.user_management.service.PermissionService;
 import com.example.user_management.utils.Consts;
@@ -22,11 +24,13 @@ import java.util.List;
 public class PermissionServiceImpl implements PermissionService {
     private static final Logger LOGGER = Logger.getLogger(PermissionServiceImpl.class);
     private final PermissionRepo repo;
+    private final GroupsRepo groupsRepo;
     private final PermissionMapper mapper;
     private final GroupsMapper groupsMapper;
 
-    public PermissionServiceImpl(PermissionRepo repo, PermissionMapper mapper, GroupsMapper groupsMapper) {
+    public PermissionServiceImpl(PermissionRepo repo, GroupsRepo groupsRepo, PermissionMapper mapper, GroupsMapper groupsMapper) {
         this.repo = repo;
+        this.groupsRepo = groupsRepo;
         this.mapper = mapper;
         this.groupsMapper = groupsMapper;
     }
@@ -48,7 +52,8 @@ public class PermissionServiceImpl implements PermissionService {
             existedPermission.setActive(model.getActive());
             existedPermission.setCreateDate(model.getCreateDate());
             existedPermission.setUpdateDate(model.getUpdateDate());
-            existedPermission.setListGroup(groupsMapper.toEntity(model.getListGroup()));
+            List<Groups> groupsList = groupsRepo.findAllById(model.getGroupsIs());
+            existedPermission.setListGroup(groupsList);
             savedPermission = repo.save(existedPermission);
         }
         if (savedPermission == null){

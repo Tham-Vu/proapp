@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UserService extends UserDetailsService {
+public interface UserService{
     UserModel getUserById(long id) throws BadRequestException;
 
     User getCurrentUserLogin();
@@ -22,5 +22,4 @@ public interface UserService extends UserDetailsService {
 
     UserModel changeActive(Long id) throws BadRequestException;
 
-    TokenResponse login(LoginModel loginModel);
 }

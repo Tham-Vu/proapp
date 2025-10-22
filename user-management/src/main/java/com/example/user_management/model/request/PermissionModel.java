@@ -19,7 +19,7 @@ public class PermissionModel {
     private Date createDate;
     private Date updateDate;
     @JsonIgnore
-    private List<GroupModel> listGroup;
+    private List<Long> groupsIs;
 
     @Override
     public String toString() {
@@ -30,7 +30,7 @@ public class PermissionModel {
                 ", active=" + active +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
-                ", listGroup=" + listGroup +
+                ", groupsIs=" + groupsIs +
                 '}';
     }
 }

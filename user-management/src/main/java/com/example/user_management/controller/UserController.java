@@ -9,11 +9,13 @@ import com.example.user_management.model.response.TokenResponse;
 import com.example.user_management.service.UserService;
 import com.example.user_management.utils.AESUtil;
 import com.example.user_management.utils.Consts;
+import com.example.user_management.utils.JWTUtils;
 import com.example.user_management.utils.LoggerInfo;
 import com.google.gson.Gson;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,10 +28,14 @@ public class UserController {
     public static final Logger LOGGER = Logger.getLogger(UserController.class);
     private final UserService userService;
     private final Gson gson;
+    private final UserDetailsService userDetailsService;
+    private final JWTUtils jwtUtils;
 
-    public UserController(UserService userService, Gson gson) {
+    public UserController(UserService userService, Gson gson, UserDetailsService userDetailsService, JWTUtils jwtUtils) {
         this.userService = userService;
         this.gson = gson;
+        this.userDetailsService = userDetailsService;
+        this.jwtUtils = jwtUtils;
     }
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable long id){
@@ -112,20 +118,20 @@ public class UserController {
     public ResponseEntity<?> updateUser(@RequestBody UserModel userModel){
         Date startDate = new Date();
         User currentUser = userService.getCurrentUserLogin();
-        LOGGER.info(new LoggerInfo(currentUser.getUsername(), "updateUser", "/users", null, null, startDate));
+        LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), "updateUser", "/users", null, null, startDate));
         UserModel resUser = null;
         CommonResponseModel res = null;
         try{
             resUser = userService.saveUser(userModel);
         }catch (Exception e){
-            LOGGER.error(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "updateUser", "/users",  null, userModel.toString(), startDate, new Date(), e.getMessage()));
+            LOGGER.error(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "updateUser", "/users",  null, userModel.toString(), startDate, new Date(), e.getMessage()));
             res = new CommonResponseModel(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
-        LOGGER.error(new LoggerInfo(currentUser.getUsername(), currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "updateUser", "/users",  null, userModel.toString(), startDate, new Date(), resUser.toString()));
-        String jData = AESUtil.encrypt(gson.toJson(resUser), currentUser.getSecretCode());
+        LOGGER.error(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "updateUser", "/users",  null, userModel.toString(), startDate, new Date(), resUser.toString()));
+        String jData = AESUtil.encrypt(gson.toJson(resUser), currentUser==null?null:currentUser.getSecretCode());
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), jData);
-        return ResponseEntity.status(HttpStatus.OK).body(res);
+        return ResponseEntity.status(HttpStatus.OK).body(resUser);
     }
     @PatchMapping("/users/change-active")
     public ResponseEntity<?> changeActive(@RequestBody Long id){
@@ -165,9 +171,16 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginModel loginModel){
-        TokenResponse response = userService.login(loginModel);
+        User user = (User) userDetailsService.loadUserByUsername(loginModel.getUsername());
+        String accessToken = jwtUtils.generateToken(user);
+        String refreshToken = jwtUtils.generateRefreshToken(user);
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setAccess_token(accessToken);
+        tokenResponse.setRefresh_token(refreshToken);
+        tokenResponse.setToken_type(Consts.BEARER.trim());
+        tokenResponse.setExpires_in(String.valueOf(Consts.JWT_EXPIRE));
         System.out.println("Hello World!");
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
     }
 
 }

@@ -1,11 +1,10 @@
 package com.example.user_management.utils;
 
-import com.example.user_management.entity.User;
-import com.example.user_management.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,9 +13,9 @@ import java.util.Date;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final JWTUtils jwtUtils;
-    private final UserService service;
+    private final UserDetailsService service;
 
-    public JwtFilter(JWTUtils jwtUtils, UserService service) {
+    public JwtFilter(JWTUtils jwtUtils, UserDetailsService service) {
         this.jwtUtils = jwtUtils;
         this.service = service;
     }

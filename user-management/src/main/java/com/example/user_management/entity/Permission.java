@@ -40,6 +40,4 @@ public class Permission implements Serializable {
     private Date updateDate;
     @ManyToMany(mappedBy = "listPermission")
     private List<Groups> listGroup;
-
-
 }

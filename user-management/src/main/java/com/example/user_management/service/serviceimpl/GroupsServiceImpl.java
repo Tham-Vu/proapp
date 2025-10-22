@@ -1,12 +1,14 @@
 package com.example.user_management.service.serviceimpl;
 
 import com.example.user_management.entity.Groups;
+import com.example.user_management.entity.User;
 import com.example.user_management.exception.BadRequestException;
 import com.example.user_management.model.mapper.GroupsMapper;
 import com.example.user_management.model.mapper.PermissionMapper;
 import com.example.user_management.model.mapper.UserMapper;
 import com.example.user_management.model.request.GroupModel;
 import com.example.user_management.repo.GroupsRepo;
+import com.example.user_management.repo.UserRepo;
 import com.example.user_management.service.GroupsService;
 import com.example.user_management.utils.Consts;
 import com.example.user_management.utils.LoggerInfo;
@@ -23,12 +25,14 @@ import java.util.List;
 public class GroupsServiceImpl implements GroupsService {
     private static  final Logger LOGGER = Logger.getLogger(GroupsServiceImpl.class);
     private final GroupsRepo repo;
+    private final UserRepo userRepo;
     private final GroupsMapper mapper;
     private final UserMapper userMapper;
     private final PermissionMapper permissionMapper;
 
-    public GroupsServiceImpl(GroupsRepo repo, GroupsMapper mapper, UserMapper userMapper, PermissionMapper permissionMapper) {
+    public GroupsServiceImpl(GroupsRepo repo, UserRepo userRepo, GroupsMapper mapper, UserMapper userMapper, PermissionMapper permissionMapper) {
         this.repo = repo;
+        this.userRepo = userRepo;
         this.mapper = mapper;
         this.userMapper = userMapper;
         this.permissionMapper = permissionMapper;
@@ -51,8 +55,9 @@ public class GroupsServiceImpl implements GroupsService {
             existedGroups.setActive(model.isActive());
             existedGroups.setCreateDate(model.getCreateDate());
             existedGroups.setUpdateDate(model.getUpdateDate());
-            existedGroups.setListUser(userMapper.toEntity(model.getUserModelList()));
-            existedGroups.setListPermission(permissionMapper.toEntity(model.getPermissionModelList()));
+            List<User> userList =  userRepo.findAllById(model.getUserIds());
+            existedGroups.setListUser(userList);
+            existedGroups.setListPermission(model.getPermissionModels()!=null || !model.getPermissionModels().isEmpty() ? permissionMapper.toEntity(model.getPermissionModels()): null);
             savedGroup = repo.save(mapper.toEntity(model));
         }
         if (savedGroup == null){

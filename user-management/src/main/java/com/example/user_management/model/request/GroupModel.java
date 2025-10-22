@@ -19,9 +19,9 @@ public class GroupModel {
     private Date createDate;
     private Date updateDate;
     @JsonIgnore
-    private List<UserModel> userModelList;
+    private List<Long> userIds;
     @JsonIgnore
-    private List<PermissionModel> permissionModelList;
+    private List<PermissionModel> permissionModels;
 
     @Override
     public String toString() {
@@ -32,8 +32,8 @@ public class GroupModel {
                 ", active=" + active +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
-                ", userModelList=" + userModelList +
-                ", permissionModelList=" + permissionModelList +
+                ", userIds=" + userIds +
+                ", permissionModels=" + permissionModels +
                 '}';
     }
 }

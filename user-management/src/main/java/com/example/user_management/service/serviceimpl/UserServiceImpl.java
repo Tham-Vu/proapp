@@ -1,11 +1,13 @@
 package com.example.user_management.service.serviceimpl;
 
+import com.example.user_management.entity.Groups;
 import com.example.user_management.entity.User;
 import com.example.user_management.exception.BadRequestException;
 import com.example.user_management.model.mapper.UserMapper;
 import com.example.user_management.model.request.LoginModel;
 import com.example.user_management.model.request.UserModel;
 import com.example.user_management.model.response.TokenResponse;
+import com.example.user_management.repo.GroupsRepo;
 import com.example.user_management.repo.UserRepo;
 import com.example.user_management.service.UserService;
 import com.example.user_management.utils.Consts;
@@ -18,8 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -27,16 +29,18 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = Logger.getLogger(UserService.class);
     private final UserRepo userRepo;
+    private final GroupsRepo groupsRepo;
     private final UserMapper userMapper;
-    private final JWTUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepo userRepo, UserMapper userMapper, JWTUtils jwtUtils) {
+    public UserServiceImpl(UserRepo userRepo, GroupsRepo groupsRepo, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.groupsRepo = groupsRepo;
         this.userMapper = userMapper;
-        this.jwtUtils = jwtUtils;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -78,6 +82,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (userModel.getId() == null){
             //create new User
             User newUser = userMapper.toEntity(userModel);
+            Groups groups = groupsRepo.findById(userModel.getGroupsId()).orElseThrow(()->{
+                LOGGER.warn(new LoggerInfo("savedUser", new Date(), Consts.GROUPS_NOT_FOUND_IN_DATABASE + userModel.getGroupsId()));
+                return new BadRequestException(Consts.GROUPS_NOT_FOUND_IN_DATABASE + userModel.getGroupsId());
+            });
+            newUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
+            newUser.setGroups(groups);
             savedUser = userRepo.save(newUser);
         }else {
             //update old User
@@ -86,6 +96,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 return new BadRequestException(Consts.USER_NOT_FOUND_IN_DATABASE + userModel.getId());
             });
             existedUser.setUsername(userModel.getUsername());
+            existedUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
             existedUser.setFirstName(userModel.getFirstName());
             existedUser.setLastName(userModel.getLastName());
             existedUser.setPhoneNumber(userModel.getPhoneNumber());
@@ -96,9 +107,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             existedUser.setCreateDate(userModel.getCreateDate());
             existedUser.setUpdateDate(userModel.getUpdateDate());
             existedUser.setActive(userModel.isActive());
-            existedUser.setGroups(userModel.getGroups());
+            Groups groups = groupsRepo.findById(userModel.getGroupsId()).orElseThrow(()->{
+                LOGGER.warn(new LoggerInfo("savedUser", new Date(), Consts.GROUPS_NOT_FOUND_IN_DATABASE + userModel.getGroupsId()));
+                return new BadRequestException(Consts.GROUPS_NOT_FOUND_IN_DATABASE + userModel.getGroupsId());
+            });
+            existedUser.setGroups(groups);
             //redefine business logic -update user
-            savedUser = userRepo.save(userMapper.toEntity(userModel));
+            savedUser = userRepo.save(existedUser);
         }
         if (savedUser==null){
             LOGGER.warn(new LoggerInfo("savedUser", new Date(), Consts.ERROR_UPDATE_DATABASE ));
@@ -135,28 +150,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new InternalServerErrorException(Consts.ERROR_UPDATE_DATABASE + SqlStatementInspector.getLastSql());
         }
         return userMapper.toDto(savedUser);
-    }
-
-    @Override
-    public TokenResponse login(LoginModel loginModel) {
-        User user = (User) this.loadUserByUsername(loginModel.getUsername());
-        String accessToken = jwtUtils.generateToken(user);
-        String refreshToken = jwtUtils.generateRefreshToken(user);
-        TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setAccess_token(accessToken);
-        tokenResponse.setRefresh_token(refreshToken);
-        tokenResponse.setToken_type(Consts.BEARER.trim());
-        tokenResponse.setExpires_in(String.valueOf(Consts.JWT_EXPIRE));
-        return tokenResponse;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
-        if (user == null){
-            LOGGER.warn(new LoggerInfo("loadUserByUsername", new Date(), Consts.USER_NOT_FOUND_IN_DATABASE + username));
-            throw new UsernameNotFoundException(Consts.USER_NOT_FOUND_IN_DATABASE + username);
-        }
-        return user;
     }
 }

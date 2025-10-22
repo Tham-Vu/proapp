@@ -24,9 +24,9 @@ public class UserModel {
     private Date createDate;
     private Date updateDate;
     private boolean active;
-    private Groups groups;
+    private Long groupsId;
 
-    public UserModel(Long id, String username, String firstName, String lastName, String phoneNumber, Date dateOfBirth, String email, Date createDate, Date updateDate, boolean active, Groups groups) {
+    public UserModel(Long id, String username, String firstName, String lastName, String phoneNumber, Date dateOfBirth, String email, Date createDate, Date updateDate, boolean active, Long groupsId) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
@@ -37,7 +37,7 @@ public class UserModel {
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.active = active;
-        this.groups = groups;
+        this.groupsId = groupsId;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class UserModel {
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
                 ", active=" + active +
-                ", groups=" + groups +
+                ", groupsId=" + groupsId +
                 '}';
     }
 }
