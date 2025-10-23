@@ -52,7 +52,7 @@ public class PermissionServiceImpl implements PermissionService {
             existedPermission.setActive(model.getActive());
             existedPermission.setCreateDate(model.getCreateDate());
             existedPermission.setUpdateDate(model.getUpdateDate());
-            List<Groups> groupsList = groupsRepo.findAllById(model.getGroupsIs());
+            List<Groups> groupsList = groupsRepo.findAllById(model.getGroupsIds());
             existedPermission.setListGroup(groupsList);
             savedPermission = repo.save(existedPermission);
         }

@@ -27,7 +27,7 @@ public class User implements UserDetails, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
-    @Column(name="USER_NAME")
+    @Column(name="USER_NAME", unique = true)
     @Size(max=100)
     private String username;
     @Column(name="PASS_WORD")

@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,7 @@ public class UserController {
         this.userDetailsService = userDetailsService;
         this.jwtUtils = jwtUtils;
     }
+    @PreAuthorize("hasRole('GET_USER_BY_ID')")
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable long id){
         Date startDate = new Date();

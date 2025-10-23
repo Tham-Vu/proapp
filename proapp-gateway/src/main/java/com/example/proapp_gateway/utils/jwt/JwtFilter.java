@@ -48,11 +48,18 @@ public class JwtFilter implements WebFilter {
                 String username = null;
                 String role = null;
                 try {
-                    username = jwtUtil.getClaimFromToken(token, Claims::getSubject);
-                    role = jwtUtil.getClaimFromToken(token, claims -> claims.get(Constants.ROLE)).toString();
-                    exchange.getAttributes().put(Constants.USERNAME, username);
-                    exchange.getAttributes().put(Constants.ROLE, role);
-                    return chain.filter(exchange);
+                    if(jwtUtil.isTokenExpired(token)){
+                        username = jwtUtil.getClaimFromToken(token, Claims::getSubject);
+                        role = jwtUtil.getClaimFromToken(token, claims -> claims.get(Constants.ROLE)).toString();
+                        exchange.getAttributes().put(Constants.USERNAME, username);
+                        exchange.getAttributes().put(Constants.ROLE, role);
+                        return chain.filter(exchange);
+                    }else {
+                        LoggerInfo loggerInfo = new LoggerInfo(JwtFilter.class.getName(), request.getPath().value(), request.getBody().toString(), startDate, new Date(), Constants.TOKEN_EXPIRE_EXCEPTION_MESS);
+                        LOGGER.error(loggerInfo);
+                        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                        return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, Constants.TOKEN_EXPIRE_EXCEPTION_MESS, bufferFactory, objectMapper);
+                    }
                 } catch (Exception e) {
                     LoggerInfo loggerInfo = new LoggerInfo(username, role, JwtFilter.class.getName(), request.getPath().value(), null, request.getBody().toString(), startDate, new Date(), Constants.INVALID_JWT_TOKEN + e.getMessage());
                     LOGGER.error(loggerInfo);

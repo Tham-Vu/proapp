@@ -1,5 +1,6 @@
 package com.example.user_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -39,5 +40,6 @@ public class Permission implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
     @ManyToMany(mappedBy = "listPermission")
+    @JsonIgnore
     private List<Groups> listGroup;
 }

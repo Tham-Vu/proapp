@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class GroupsController {
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), jData );
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
+    @PreAuthorize("hasRole('GET_GROUP_BY_ID')")
     @GetMapping("/groups/{id}")
     public ResponseEntity<?> getGroupsById(@PathVariable long id){
         Date startDate = new Date();

@@ -18,9 +18,7 @@ public class GroupModel {
     private boolean active;
     private Date createDate;
     private Date updateDate;
-    @JsonIgnore
     private List<Long> userIds;
-    @JsonIgnore
     private List<PermissionModel> permissionModels;
 
     @Override

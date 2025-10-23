@@ -1,5 +1,6 @@
 package com.example.user_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,7 +13,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NonNull
 @NoArgsConstructor
 @AllArgsConstructor
 public class Groups implements Serializable {
@@ -37,8 +37,9 @@ public class Groups implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
     @OneToMany(mappedBy = "groups")
+    @JsonIgnore
     private List<User> listUser;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinTable(name="GROUP_PERMISSION", joinColumns = {
            @JoinColumn(name = "GROUP_ID", referencedColumnName = "ID")
     }, inverseJoinColumns = {
