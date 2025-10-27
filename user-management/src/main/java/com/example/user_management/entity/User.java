@@ -44,12 +44,12 @@ public class User implements UserDetails, Serializable {
     @Column(name="DOB")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfBirth;
-    @Column(name="EMAIL")
+    @Column(name="EMAIL", unique = true)
     @Size(max=100)
     private String email;
     @Column(name = "PUBLIC_KEY")
     private String publicKey;
-    @Column(name = "SECRET_CODE")
+    @Column(name = "SECRET_CODE", unique = true)
     @Size(max = 16)
     private String secretCode;
     @Column(name="CREATE_DATE")
@@ -69,7 +69,7 @@ public class User implements UserDetails, Serializable {
         List<GrantedAuthority> list = new ArrayList<>();
         if (this.groups != null){
             this.getGroups().getListPermission().forEach(permission -> {
-                list.add(new SimpleGrantedAuthority(permission.getName().toUpperCase()));
+                list.add(new SimpleGrantedAuthority("ROLE_" + permission.getName().toUpperCase()));
             });
         }
         return list;

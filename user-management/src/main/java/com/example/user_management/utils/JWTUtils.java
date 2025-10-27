@@ -1,6 +1,7 @@
 package com.example.user_management.utils;
 
 import com.example.user_management.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.function.Function;
 
 @Component
 public class JWTUtils implements Serializable {
@@ -29,5 +31,16 @@ public class JWTUtils implements Serializable {
                 .setSubject(user.getUsername())
                 .signWith(SignatureAlgorithm.HS256, Consts.JWT_SECRET)
                 .compact();
+    }
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = Jwts.parser()
+                .setSigningKey(Consts.JWT_SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+        return claimsResolver.apply(claims);
+    }
+    public boolean isTokenExpired(String token) {
+        final Date expiration = this.getClaimFromToken(token, Claims::getExpiration);
+        return expiration.before(new Date());
     }
 }

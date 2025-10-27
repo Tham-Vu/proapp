@@ -2,6 +2,7 @@ package com.example.user_management.service.serviceimpl;
 
 import com.example.user_management.entity.Groups;
 import com.example.user_management.entity.Permission;
+import com.example.user_management.entity.User;
 import com.example.user_management.exception.BadRequestException;
 import com.example.user_management.model.mapper.GroupsMapper;
 import com.example.user_management.model.mapper.PermissionMapper;
@@ -18,10 +19,7 @@ import jakarta.ws.rs.InternalServerErrorException;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class GroupsServiceImpl implements GroupsService {
@@ -65,17 +63,11 @@ public class GroupsServiceImpl implements GroupsService {
         group.setUpdateDate(model.getUpdateDate());
 
         if (model.getUserIds() != null && !model.getUserIds().isEmpty()) {
-            group.setListUser(userRepo.findAllById(model.getUserIds()));
+            group.setListUser(new HashSet<>(userRepo.findAllById(model.getUserIds())));
         }
 
-        if (model.getPermissionModels() != null && !model.getPermissionModels().isEmpty()) {
-            List<Long> permIds = model.getPermissionModels()
-                    .stream()
-                    .map(PermissionModel::getId)
-                    .filter(Objects::nonNull)
-                    .toList();
-
-            List<Permission> permissions = permissionRepo.findAllById(permIds);
+        if (model.getPermissionIds() != null && !model.getPermissionIds().isEmpty()) {
+            HashSet<Permission> permissions = new HashSet<>(permissionRepo.findAllById(model.getPermissionIds()));
             group.setListPermission(permissions);
         } else {
             group.setListPermission(null);

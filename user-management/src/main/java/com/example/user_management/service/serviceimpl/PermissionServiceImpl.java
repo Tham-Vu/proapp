@@ -16,9 +16,7 @@ import jakarta.ws.rs.InternalServerErrorException;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {
@@ -40,6 +38,10 @@ public class PermissionServiceImpl implements PermissionService {
         Permission savedPermission = new Permission();
         if (model.getId() == null){
             Permission newPermission = mapper.toEntity(model);
+            if (model.getGroupsIds() != null && !model.getGroupsIds().isEmpty()){
+                Set<Groups> groupsSet = new HashSet<>(groupsRepo.findAllById(model.getGroupsIds()));
+                newPermission.setListGroup(groupsSet);
+            }
             savedPermission = repo.save(newPermission);
         }else {
             //update old permission
@@ -52,8 +54,10 @@ public class PermissionServiceImpl implements PermissionService {
             existedPermission.setActive(model.getActive());
             existedPermission.setCreateDate(model.getCreateDate());
             existedPermission.setUpdateDate(model.getUpdateDate());
-            List<Groups> groupsList = groupsRepo.findAllById(model.getGroupsIds());
-            existedPermission.setListGroup(groupsList);
+            if (model.getGroupsIds() != null && !model.getGroupsIds().isEmpty()){
+                Set<Groups> groupsSet = new HashSet<>(groupsRepo.findAllById(model.getGroupsIds()));
+                existedPermission.setListGroup(groupsSet);
+            }
             savedPermission = repo.save(existedPermission);
         }
         if (savedPermission == null){

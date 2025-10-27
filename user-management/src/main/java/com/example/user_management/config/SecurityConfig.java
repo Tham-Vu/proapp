@@ -48,21 +48,21 @@ public class SecurityConfig {
                             .requestMatchers("/api/refresh-toke").permitAll()
                             .requestMatchers("/api/logout").permitAll()
 //                            users api
-//                            .requestMatchers(HttpMethod.GET, "/api/users").hasRole("GET_LIST_USERS")
-//                            .requestMatchers(HttpMethod.POST, "/api/users").hasRole("CREATE_USER")
-//                            .requestMatchers(HttpMethod.PUT,"/api/users").hasRole("UPDATE_USER")
-//                            .requestMatchers(HttpMethod.DELETE, "/api/users").hasRole("DELETE_USER")
-////                          groups api
-//                            .requestMatchers(HttpMethod.GET, "/api/groups").hasRole("GET_LIST_GROUPS")
-//                            .requestMatchers(HttpMethod.POST, "/api/groups").hasRole("CREATE_GROUP")
-//                            .requestMatchers(HttpMethod.PUT,"/api/groups").hasRole("UPDATE_GROUP")
-//                            .requestMatchers(HttpMethod.DELETE, "/api/groups").hasRole("DELETE_GROUP")
-////                          permissions
-//                            .requestMatchers(HttpMethod.GET, "/api/permissions").hasRole("GET_LIST_PERMISSIONS")
-//                            .requestMatchers(HttpMethod.POST, "/api/permissions").hasRole("CREATE_PERMISSION")
-//                            .requestMatchers(HttpMethod.PUT,"/api/permissions").hasRole("UPDATE_PERMISSION")
-//                            .requestMatchers(HttpMethod.DELETE, "/api/permissions").hasRole("DELETE_PERMISSION")
-                            .anyRequest().permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/users").hasRole("GET_ALL_USERS")
+                            .requestMatchers(HttpMethod.POST, "/api/users").hasRole("CREATE_USER")
+                            .requestMatchers(HttpMethod.PUT,"/api/users").hasRole("UPDATE_USER")
+                            .requestMatchers(HttpMethod.DELETE, "/api/users").hasRole("DELETE_USER")
+//                          groups api
+                            .requestMatchers(HttpMethod.GET, "/api/groups").hasRole("GET_ALL_GROUPS")
+                            .requestMatchers(HttpMethod.POST, "/api/groups").hasRole("CREATE_GROUP")
+                            .requestMatchers(HttpMethod.PUT,"/api/groups").hasRole("UPDATE_GROUP")
+                            .requestMatchers(HttpMethod.DELETE, "/api/groups").hasRole("DELETE_GROUP")
+//                          permissions
+                            .requestMatchers(HttpMethod.GET, "/api/permissions").hasRole("GET_ALL_PERMISSIONS")
+                            .requestMatchers(HttpMethod.POST, "/api/permissions").hasRole("CREATE_PERMISSION")
+                            .requestMatchers(HttpMethod.PUT,"/api/permissions").hasRole("UPDATE_PERMISSION")
+                            .requestMatchers(HttpMethod.DELETE, "/api/permissions").hasRole("DELETE_PERMISSION")
+//                            .anyRequest().permitAll()
 
         );
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

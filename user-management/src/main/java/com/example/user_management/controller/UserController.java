@@ -85,6 +85,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
         LOGGER.info(new LoggerInfo(currentUser==null?null:currentUser.getUsername(), currentUser==null?null:currentUser.getAuthorities().stream().map(role -> role.toString()).toString(), "getAllUsers", "users",  null, null, startDate, new Date(), gson.toJson(list)));
+        System.out.println(currentUser==null?null:currentUser.getSecretCode());
         String jData = AESUtil.encrypt(gson.toJson(list), currentUser==null?null:currentUser.getSecretCode());
         res = new CommonResponseModel(startDate.toString(), HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), jData );
         return ResponseEntity.status(HttpStatus.OK).body(res);

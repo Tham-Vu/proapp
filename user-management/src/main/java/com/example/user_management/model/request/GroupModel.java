@@ -1,6 +1,5 @@
 package com.example.user_management.model.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.Date;
@@ -19,7 +18,7 @@ public class GroupModel {
     private Date createDate;
     private Date updateDate;
     private List<Long> userIds;
-    private List<PermissionModel> permissionModels;
+    private List<Long> permissionIds;
 
     @Override
     public String toString() {
@@ -31,7 +30,7 @@ public class GroupModel {
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
                 ", userIds=" + userIds +
-                ", permissionModels=" + permissionModels +
+                ", permissionIds=" + permissionIds +
                 '}';
     }
 }

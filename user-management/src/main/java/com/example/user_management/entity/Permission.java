@@ -10,6 +10,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -24,7 +25,7 @@ public class Permission implements Serializable {
     @Column(name = "ID")
 //    @NonNull
     private Long id;
-    @Column(name = "NAME")
+    @Column(name = "NAME", unique = true)
     @Size(max = 200)
     @NotNull
     private String name;
@@ -39,7 +40,7 @@ public class Permission implements Serializable {
     @Column(name = "UPDATE_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
-    @ManyToMany(mappedBy = "listPermission")
+    @ManyToMany(mappedBy = "listPermission", cascade = CascadeType.PERSIST)
     @JsonIgnore
-    private List<Groups> listGroup;
+    private Set<Groups> listGroup;
 }

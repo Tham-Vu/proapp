@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ public class PermissionModel {
     private Boolean active;
     private Date createDate;
     private Date updateDate;
-    private List<Long> groupsIds;
+    private Set<Long> groupsIds;
 
     @Override
     public String toString() {

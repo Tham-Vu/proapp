@@ -2,13 +2,13 @@ package com.example.user_management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,7 +22,7 @@ public class Groups implements Serializable {
 //    @NotNull
     @Column(name = "ID")
     private Long id;
-    @Column(name = "NAME")
+    @Column(name = "NAME", unique = true)
     @Size(max = 50)
     private String name;
     @Column(name = "DESCRIPTION")
@@ -38,12 +38,12 @@ public class Groups implements Serializable {
     private Date updateDate;
     @OneToMany(mappedBy = "groups")
     @JsonIgnore
-    private List<User> listUser;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    private Set<User> listUser;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     @JoinTable(name="GROUP_PERMISSION", joinColumns = {
            @JoinColumn(name = "GROUP_ID", referencedColumnName = "ID")
     }, inverseJoinColumns = {
             @JoinColumn(name = "PERMISSION_ID", referencedColumnName = "ID")
     })
-    private List<Permission> listPermission;
+    private Set<Permission> listPermission;
 }
